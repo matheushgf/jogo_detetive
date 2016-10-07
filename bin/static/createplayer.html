@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Cadastro de Usuários</title>
+
+
+	  <script src="/js/jquery-2.2.3.min.js"></script>
+
+	<link href="css/bootstrap.min.css" rel=stylesheet>
+	
+	
+	<script>
+		$(document).ready(function(){
+			$('form').submit(function(e){
+				e.preventDefault();
+				
+				var email = $('#email').val().trim();
+				var password = $('#password').val().trim();
+
+				var url = JSON.stringify({"email":email,"password":password});
+				
+				$.post("/jogador/add", url, function(data){
+							
+					
+						if(data[0].status == 1)
+						{
+
+							sessionStorage.setItem("email",data[0].email);
+							window.location.href = '/begingame.html';
+						} 
+						else
+						{
+							window.location.href = '/ 	.html?error';
+						}
+						
+				}, "json");
+			
+			});
+				});
+
+	</script>
+	
+  </head>
+  <body background="http://www.portalgildabonfim.com.br/site/wp-content/uploads/2014/04/fundo-site.jpg">
+		<br>
+		<br>
+		<form class="form-horizontal" method="post" id="form">
+			<div class="form-group form-group">
+				<label for="tiago" class="col-md-4 control-label">Email</label>
+				<div class="col-md-4">
+					<input required="required" type="email" class="form-control" id="email" placeholder="Email">
+				</div>
+				<div class="col-md-4">
+					<label for="inputEmail3" class="control-label">Ex: tiago.rfaria@hotmail.com</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="inputPassword3" class="col-md-4 control-label">Senha</label>
+				<div class="col-md-4">
+					<input required="required" type="password" class="form-control" id="password" placeholder="Senha">
+				</div>
+				<div class="col-md-4">
+					<label for="inputEmail3" class="control-label">Ex: 12345</label>
+				</div>
+			</div>
+																	
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="createUser" type="submit" class="btn btn-primary col-md-offset-5">Cadastrar Usuário</button>
+				</div>
+			</div>
+			
+		</form>
+	
+  </body>
+</html>

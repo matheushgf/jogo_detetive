@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Assessment Skills - Search RA</title>
+
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+
+    <link href="css/bootstrap.min.css" rel=stylesheet>
+
+    <script>
+		$(document).ready(function(){
+
+			$.getJSON("/users?format=json&jsoncallback=",function(data) {
+
+					var items = [];
+
+					$.each(data, function(i){
+
+
+
+						items.push("<tr> <td>"+ this.student + "</td> <td>" + this.idade + "</td> <td><a class='btn btn-danger' role='button' href='/deleteUser.html?"+this.student+"'>Excluir </a> </td> </tr>" );
+
+					});
+
+					$("#dataRows").append(items);
+
+			});
+
+
+		});
+
+
+	</script>
+
+
+</head>
+<body>
+
+
+<div id="navbar" class="navbar navbar-default navbar-static-top">
+    <ul class="nav navbar-nav">
+        <li class="active"><a href="adm.html">Painel de Controle</a></li>
+        <li><a href="listUsers.html">Gerenciar Usuarios</a></li>
+    </ul>
+
+</div>
+</nav>
+
+<table class="table table-bordered">
+    <caption>Todos os Usuarios</caption>
+    <thead>
+    <tr>
+        <th>Usuarios ativos</th>
+        <th>Pontuação</th>
+        <th>Deletar Usuario</th>
+
+
+    </tr>
+    </thead>
+
+    <tbody id="dataRows">
+
+    </tbody>
+</table>
+
+
+
+
+</body>
+</html>
