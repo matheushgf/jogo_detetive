@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Game</title>
+	
+		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	
+		<link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+	
+		<script>
+			$(document).ready(function(){
+				
+				var perguntaJogador;
+				var email = sessionStorage.getItem("email");
+
+				if(email == null){
+					window.location.href = '/index.html';
+				}
+		/*		
+				$.getJSON("/getpergunta/"+email+"?format=json&jsoncallback=",function(data) {
+					console.log(data[0].resposta);
+					sessionStorage.setItem("perguntajogador",data[0].pergunta);
+				});
+		*/
+				var xhr = new XMLHttpRequest();
+				var url = "/getpergunta/"+email+"?format=json";
+				
+				xhr.onload = function (e) {
+					  if (xhr.readyState === 4) {
+					    if (xhr.status === 200) {
+					    	var data = jQuery.parseJSON(xhr.responseText);
+					      	console.log(data[0].pergunta);
+					      	sessionStorage.setItem("perguntajogador",data[0].pergunta);
+					    } else {
+					      console.error(xhr.statusText);
+					    }
+					  }
+					};
+				xhr.open("GET", url, false);
+				xhr.onerror = function (e) {
+				  console.error(xhr.statusText);
+				};
+				xhr.send(null);
+				
+				var perguntaJogador = sessionStorage.getItem("perguntajogador").toString();
+				
+				$.getJSON("/perguntas/"+perguntaJogador+"?format=json&jsoncallback=",function(data) {
+					
+					if(data[0].error){
+						window.location.href = '/rank.html';
+					}else{
+						var title = data[0].pergunta;
+						$("#pergunta").append(title);
+						
+						$("#op1").attr('value', data[0].alternativa[0].alternativa);
+						$("#op2").attr('value', data[0].alternativa[1].alternativa);
+						$("#op3").attr('value', data[0].alternativa[2].alternativa);
+						$("#op1").append(data[0].alternativa[0].alternativa);
+						$("#op2").append(data[0].alternativa[1].alternativa);
+						$("#op3").append(data[0].alternativa[2].alternativa);
+					}
+				});	
+				
+				$("#op1").click(function() {
+					var perguntaJogador = sessionStorage.getItem("perguntajogador").toString();
+					var resp = document.getElementById("op1").value;
+				
+					var url = "/resposta/"+email+"/"+perguntaJogador+"/"+resp+"?format=json&jsoncallback=";
+					
+					$.getJSON(url,function(data) {
+						console.log(data);
+						if(data[0].error==0){
+							$.getJSON("/getpergunta/"+email+"?format=json&jsoncallback=",function(data) {
+								console.log(data[0].resposta);
+								sessionStorage.setItem("perguntajogador",data[0].pergunta);
+							});
+							window.location.reload();
+						} else {
+							window.location.href = '/sucess.html';
+						}
+					});
+			
+				});
+				
+				$("#op2").click(function() {
+					var perguntaJogador = sessionStorage.getItem("perguntajogador").toString();
+					var resp = document.getElementById("op2").value;
+				
+					var url = "/resposta/"+email+"/"+perguntaJogador+"/"+resp+"?format=json&jsoncallback=";
+					
+					$.getJSON(url,function(data) {
+						console.log(data);
+						if(data[0].error==0){
+							$.getJSON("/getpergunta/"+email+"?format=json&jsoncallback=",function(data) {
+								console.log(data[0].resposta);
+								sessionStorage.setItem("perguntajogador",data[0].pergunta);
+							});
+							window.location.reload();
+						} else {
+							window.location.href = '/sucess.html';
+						}
+					});
+			
+				});	
+				
+				$("#op3").click(function() {
+					var perguntaJogador = sessionStorage.getItem("perguntajogador").toString();
+					var resp = document.getElementById("op3").value;
+					
+					var url = "/resposta/"+email+"/"+perguntaJogador+"/"+resp+"?format=json&jsoncallback=";
+					
+					$.getJSON(url,function(data) {
+						console.log(data);
+						if(data[0].error==0){
+							$.getJSON("/getpergunta/"+email+"?format=json&jsoncallback=",function(data) {
+								console.log(data[0].resposta);
+								sessionStorage.setItem("perguntajogador",data[0].pergunta);
+							});
+							window.location.reload();
+						} else {
+							window.location.href = '/sucess.html';
+						}
+					});
+			
+				});	
+
+				
+			});
+			
+			
+		</script>   
+	</head>
+	<body background="http://www.portalgildabonfim.com.br/site/wp-content/uploads/2014/04/fundo-site.jpg">
+		<br>
+		<br>
+		
+			<div id="idPergunta"></div>
+			<div class="form-group">
+				<h3><p class="text-center" id="pergunta"><strong></strong></p></h3>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-4">
+					<button id="op1" class="btn btn-primary col-md-offset-4 col-md-4"></button>
+				</div>
+				<div class="col-md-4">
+					<button id="op2" class="btn btn-primary col-md-offset-4 col-md-4"></button>
+				</div>
+				<div class="col-md-4">
+					<button id="op3" class="btn btn-primary col-md-offset-4 col-md-4"></button>
+				</div>
+			</div>
+			
+
+	
+  
+	</body>
+</html>

@@ -342,7 +342,7 @@ public class REST{
 	}
     
     public void getResposta(){
-		get("/resposta/:pergunta/:resposta", new Route() {
+		get("/resposta/:email/:pergunta/:resposta", new Route() {
 			
 			@Override
 			public Object handle(final Request request, final Response response) throws Exception {
@@ -353,13 +353,19 @@ public class REST{
 				{
 					String respostaJogador = request.params(":resposta");
 					int perguntaJogador = Integer.parseInt(request.params(":pergunta"));
+					String email = request.params(":email");
 					
 					if(respostaJogador != null){
 						JSONArray jsonResult = new JSONArray();
 						JSONObject jsonObj = new JSONObject();
 						if(model.checarResposta(respostaJogador, perguntaJogador)){
+							model.setarProxima(true, email);
 							jsonObj.put("resposta", "certo");
-						}else jsonObj.put("resposta", "errado");
+						}else{
+							model.setarProxima(false, email);
+							jsonObj.put("resposta", "errado");
+							}
+						jsonObj.put("error",0);
 						jsonResult.put(jsonObj);
 						return jsonResult;
 					}
@@ -368,7 +374,7 @@ public class REST{
 				{
 					JSONArray jsonResult = new JSONArray();
 					JSONObject jsonObj = new JSONObject();
-					jsonObj.put("resposta", "errado");
+					jsonObj.put("error", 1);
 					jsonResult.put(jsonObj);
 				}
 				return null;
@@ -393,17 +399,19 @@ public class REST{
 	            	JSONArray jsonResult = new JSONArray();
 	         	    JSONObject jsonObjQuestion = new JSONObject();
 	         	    
-	         	    jsonObjQuestion.put("idPergunta", pergunta.getId());
-	        		jsonObjQuestion.put("pergunta", pergunta.getPergunta());
-	        		jsonObjQuestion.put("alternativa", pergunta.getAlternativas());
-	        		
-	        		jsonResult.put(jsonObjQuestion);
-
-	        		
-	        		
-	             	return jsonResult;
+	         	    if(pergunta!=null){
+	         	    	jsonObjQuestion.put("error", false);
+	         	    	jsonObjQuestion.put("idPergunta", pergunta.getId());
+		        		jsonObjQuestion.put("pergunta", pergunta.getPergunta());
+		        		jsonObjQuestion.put("alternativa", pergunta.getAlternativas());
+	         	    }else{
+	         	    	jsonObjQuestion.put("error", true);
+	         	    }
 	             	
-	        		} catch (JSONException e) {
+	         	    jsonResult.put(jsonObjQuestion);
+					return jsonResult;
+					
+	        		}catch (JSONException e) {
 	        				
 	        			e.printStackTrace();
 	        		}

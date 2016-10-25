@@ -40,7 +40,8 @@ public class MainServer {
     }
 
     public static void initialize (){
-        model.addJogador(new Jogador("teste@tese.com", "123"));
+    	model.deleteJogador("a@a.com");
+        model.addJogador(new Jogador("a@a.com", "1"));
         model.addAdm(new Adm("adm", "game"));
         
         Pergunta pergunta;

@@ -29,7 +29,12 @@
 
 					} else
 						sessionStorage.setItem("email",username);
-						window.location.href = '/sucess.html';
+						$.getJSON("/getpergunta/"+username+"?format=json&jsoncallback=",function(data) {
+							sessionStorage.setItem("perguntajogador",data[0].pergunta);
+							console.log("FOI");
+					
+						});
+						window.location.href = '/game.html';
 
 				});
 			});

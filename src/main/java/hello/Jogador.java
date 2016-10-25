@@ -10,7 +10,7 @@ public class Jogador {
     
     public Jogador(){
     	ponto=0;
-    	pergunta=1;
+    	pergunta=0;
     }
     
     public String getEmail() {
@@ -35,16 +35,20 @@ public class Jogador {
     public int getPonto() {
         return ponto;
     }
-    public void setPonto(int question) {
+    public void setPonto(int ponto) {
         this.ponto = ponto;
     }
-
+    
+    public void addPonto(){
+    	this.ponto++;
+    }
+    
 	public int getPergunta() {
 		return pergunta;
 	}
 
-	public void setPergunta(int pergunta) {
-		this.pergunta = pergunta;
+	public void proximaPergunta() {
+		this.pergunta++;
 	}
     
 

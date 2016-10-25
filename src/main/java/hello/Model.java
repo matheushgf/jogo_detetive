@@ -12,9 +12,9 @@ import com.db4o.ObjectSet;
 import com.db4o.query.Query;
 
 public class Model{
-	ObjectContainer jogadores = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/jogadores2.db4o");
-	ObjectContainer admDB = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/admDB.db4o");
-	ObjectContainer perguntas = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/perguntas.db4o");
+	ObjectContainer jogadores = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/jogadores3.db4o");
+	ObjectContainer admDB = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/admDB1.db4o");
+	ObjectContainer perguntas = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/perguntas2.db4o");
     
 	public boolean isUserAvailable(String email){
 		Query query = jogadores.query();
@@ -190,6 +190,14 @@ public class Model{
 	
 	public int getPerguntaJogador(String email){
 		return getJogador(email).getPergunta();
+	}
+	
+	public void setarProxima(boolean acerto, String email){
+		Jogador jogador = getJogador(email);
+		jogador.proximaPergunta();
+		if(acerto){
+			jogador.addPonto();
+		}
 	}
 
 }
