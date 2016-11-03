@@ -1,0 +1,10 @@
+#rank{
+	border: 5px solid red;
+	border-radius: 20px;
+	margin: 10% 40% 0;
+}
+
+#rank td{
+	border: 2px solid black;
+	padding: 20px;
+}

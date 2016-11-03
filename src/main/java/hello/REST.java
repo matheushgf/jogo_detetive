@@ -317,7 +317,7 @@ public class REST{
 						JSONObject jsonObj = new JSONObject();
 						jsonObj.put("position",cont);
 						cont++;
-						jsonObj.put("student", jogador.getEmail());
+						jsonObj.put("email", jogador.getEmail());
 						jsonObj.put("points", jogador.getPonto());
 
 						jsonResult.put(jsonObj);

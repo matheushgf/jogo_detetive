@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<script src="js/jquery-latest.min.js"></script>
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/jogo.css" rel="stylesheet">
+		<script src="js/angular.min.js"></script>
+		<script src="js/rank.js"></script>
+	</head>
+	<body background="images/fundo-site.jpg" ng-app="rankApp" ng-controller="rankCtrl">
+		<center>
+			<table id="rank">
+			  <tr ng-repeat="x in users">
+			  	<td>{{ x.position }}</td>
+			    <td>{{ x.email }}</td>
+			    <td>{{ x.points }}</td>
+			  </tr>
+			</table>
+		</center>
+	</body>
+</html>

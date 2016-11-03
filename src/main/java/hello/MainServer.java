@@ -37,6 +37,7 @@ public class MainServer {
         controller.getPerguntaPorId();
 		controller.getResposta();
 		controller.getPerguntaJogador();
+		controller.getRank();
     }
 
     public static void initialize (){
