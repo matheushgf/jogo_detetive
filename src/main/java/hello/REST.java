@@ -22,7 +22,7 @@ import spark.Route;
 public class REST{
 
 	private Model model;
-
+	private final int MAX_PERGUNTAS=6;
 
 	public REST(Model store){
 		this.model = store;
@@ -342,18 +342,22 @@ public class REST{
 	}
     
     public void getResposta(){
-		get("/resposta/:email/:pergunta/:resposta", new Route() {
+		post("/respostas", new Route() {
 			
 			@Override
 			public Object handle(final Request request, final Response response) throws Exception {
 				
 				response.header("Acess-Control-Allow-Origin", "*");
+				JSONObject dados = new JSONObject(request.body());
+				
+				System.out.println(request.headers("Content-Type"));
+				System.out.println(request.body());
 				
 				try
 				{
-					String respostaJogador = request.params(":resposta");
-					int perguntaJogador = Integer.parseInt(request.params(":pergunta"));
-					String email = request.params(":email");
+					String respostaJogador = dados.getString("resposta");
+					int perguntaJogador = dados.getInt("pergunta");
+					String email = dados.getString("email");
 					
 					if(respostaJogador != null){
 						JSONArray jsonResult = new JSONArray();
@@ -394,23 +398,29 @@ public class REST{
 	            Integer id = Integer.parseInt(request.params(":id"));
 	            
 	            try {
-	            	Pergunta pergunta = model.pesquisaPerguntaPorId(id);
-	            	
 	            	JSONArray jsonResult = new JSONArray();
 	         	    JSONObject jsonObjQuestion = new JSONObject();
-	         	    
-	         	    if(pergunta!=null){
-	         	    	jsonObjQuestion.put("error", false);
-	         	    	jsonObjQuestion.put("idPergunta", pergunta.getId());
-		        		jsonObjQuestion.put("pergunta", pergunta.getPergunta());
-		        		jsonObjQuestion.put("alternativa", pergunta.getAlternativas());
-	         	    }else{
-	         	    	jsonObjQuestion.put("error", true);
-	         	    }
-	             	
-	         	    jsonResult.put(jsonObjQuestion);
-					return jsonResult;
-					
+	            	if(id<=MAX_PERGUNTAS){
+		            	Pergunta pergunta = model.pesquisaPerguntaPorId(id);
+		         	    if(pergunta!=null){
+		         	    	jsonObjQuestion.put("error", false);
+		         	    	jsonObjQuestion.put("over", false);
+		         	    	jsonObjQuestion.put("idPergunta", pergunta.getId());
+			        		jsonObjQuestion.put("pergunta", pergunta.getPergunta());
+			        		jsonObjQuestion.put("alternativa", pergunta.getAlternativas());
+		         	    }else{
+		         	    	jsonObjQuestion.put("error", true);
+		         	    }
+		             	
+		         	    jsonResult.put(jsonObjQuestion);
+						return jsonResult;
+	            	}else{
+	            		jsonObjQuestion.put("error", false);
+	            		jsonObjQuestion.put("over", true);
+	            		
+	            		jsonResult.put(jsonObjQuestion);
+	            		return jsonResult;
+	            	}
 	        		}catch (JSONException e) {
 	        				
 	        			e.printStackTrace();
@@ -440,24 +450,19 @@ public class REST{
 	            	
 	            	JSONArray jsonResult = new JSONArray();
 	         	    JSONObject jsonObjQuestion = new JSONObject();
-	         	    
+	         	    jsonObjQuestion.put("error", false);	
 	         	    jsonObjQuestion.put("pergunta", pergunta);
-	       
-	        		
 	        		jsonResult.put(jsonObjQuestion);
-
-	        		
-	        		
 	             	return jsonResult;
 	             	
-	        		} catch (JSONException e) {
-	        				
+	        		} catch (JSONException e) {	        			
 	        			e.printStackTrace();
-	        		}
-	         	    	
-	
-	     	    return null;
-	     	     
+	        			JSONArray jsonResult = new JSONArray();
+		         	    JSONObject jsonObjQuestion = new JSONObject();
+		         	    jsonObjQuestion.put("error", true); 
+		        		jsonResult.put(jsonObjQuestion);
+		        		return jsonResult;
+	        		} 
 	         }
 	         
 	      });

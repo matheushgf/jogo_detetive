@@ -6,8 +6,6 @@
 	
     
 	<script src="/js/jquery-2.2.3.min.js"></script>
-	
-
 	<link href="/css/bootstrap.min.css" rel=stylesheet>
 	
 	
@@ -28,8 +26,13 @@
 					window.alert("Senha Incorreta");
 
 					} else
-
-						window.location.href = '/sucess.html';
+						sessionStorage.setItem("email",username);
+						$.getJSON("/getpergunta/"+username+"?format=json&jsoncallback=",function(data) {
+							sessionStorage.setItem("perguntajogador",data[0].pergunta);
+							console.log("FOI");
+					
+						});
+						window.location.href = '/game.html';
 
 				});
 			});
@@ -48,7 +51,7 @@
 	</script>
 
   </head>
-  <body>
+  <body  background="images/fundo-site.jpg">
 		<br>
 		<br>
 		<form class="form-horizontal" method="post" id="form">
