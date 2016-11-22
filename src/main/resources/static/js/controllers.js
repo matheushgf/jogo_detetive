@@ -24,8 +24,6 @@ app.controller("rankCtrl", function($scope) {
 
 //Controller da página das perguntas
 app.controller("gameCtrl", function($scope, $http) {
-
-	$http.defaults.headers.common['Content-Type'] = 'application/json; charset=utf-8';
 	
 	$scope.perguntaJogador;
 	$scope.email = sessionStorage.getItem("email");
@@ -76,6 +74,10 @@ app.controller("gameCtrl", function($scope, $http) {
 					$scope.op1 = dados.alternativa[0].alternativa;
 					$scope.op2 = dados.alternativa[1].alternativa;
 					$scope.op3 = dados.alternativa[2].alternativa;
+					
+					$("#op1").attr($scope.op1);
+					$("#op2").attr($scope.op2);
+					$("#op3").attr($scope.op3);
 				}else{
 					console.log('ACABARAM AS PERGUNTAS');
 					window.location.href = '/rank.html';
@@ -87,30 +89,19 @@ app.controller("gameCtrl", function($scope, $http) {
 		});
 	}
 	
-	$scope.opcaoEscolhida = function(opcao){
-		var textoOpcao="";
+	$scope.opcaoEscolhida = function($event){
+		var textoOpcao=$event.currentTarget.value;
 		var url="";
-		switch(opcao){
-			case 1:
-				console.log('OPCAO 1 ESCOLHIDA');
-				textoOpcao=$scope.op1;
-				break;
-			case 2:
-				console.log('OPCAO 2 ESCOLHIDA');
-				textoOpcao=$scope.op2;
-				break;
-			case 3:
-				console.log('OPCAO 3 ESCOLHIDA');
-				textoOpcao=$scope.op3;
-				break;
-		}
-		textoOpcao=$scope.op1;
 		url = "/respostas";
-		$http.post(url,
-		{email: $scope.email,
-		pergunta: $scope.perguntaJogador,
-		resposta: textoOpcao},
-		{headers: {'Content-Type': undefined}})
+		
+		var message = {
+			email: $scope.email,
+			pergunta: $scope.perguntaJogador,
+			resposta: textoOpcao
+		};
+			
+		//$http.defaults.headers.post["Content-Type"] = "application/json";
+		$http.post(url, message)
 		.then(function(response){
 			var dados = response.data[0];
 			console.log(dados);

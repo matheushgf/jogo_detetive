@@ -177,7 +177,6 @@ public class Model{
 	    for(Pergunta p: allPerguntas){
 	    	if(p.getId()==pergunta){
 	    		for(Alternativa a:p.getAlternativas()){
-	    			System.out.println(a.getAlternativa()+" vs "+resposta);
 	    			if(a.getStatus()==true && a.getAlternativa().equals(resposta)) return true;
 	    		}
 	    		return false;

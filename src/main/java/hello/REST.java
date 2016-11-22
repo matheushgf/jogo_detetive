@@ -348,13 +348,12 @@ public class REST{
 			public Object handle(final Request request, final Response response) throws Exception {
 				
 				response.header("Acess-Control-Allow-Origin", "*");
-				JSONObject dados = new JSONObject(request.body());
-				
 				System.out.println(request.headers("Content-Type"));
 				System.out.println(request.body());
 				
 				try
 				{
+					JSONObject dados = new JSONObject(new String(request.body().getBytes(), "UTF-8"));
 					String respostaJogador = dados.getString("resposta");
 					int perguntaJogador = dados.getInt("pergunta");
 					String email = dados.getString("email");
