@@ -7,6 +7,7 @@ import static spark.Spark.post;
 
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,7 +23,6 @@ import spark.Route;
 public class REST{
 
 	private Model model;
-	private final int MAX_PERGUNTAS=6;
 
 	public REST(Model store){
 		this.model = store;
@@ -53,16 +53,9 @@ public class REST{
 
 	            	} else {
 
-
-
 	            	}
-
-
-
 	        		} catch (JSONException e) {
-
-	        			//e.printStackTrace();
-
+	        			e.printStackTrace();
 	        		}
 
 
@@ -71,12 +64,9 @@ public class REST{
 
         		jsonObj.put("email", "");
 
-
              	jsonResult.put(jsonObj);
 
              	return jsonResult;
-
-
 	         }
 
 	      });
@@ -217,8 +207,8 @@ public class REST{
 
 					for(Jogador jogador : jogadores){
 						JSONObject jsonObj = new JSONObject();
-						jsonObj.put("jogador", jogador.getEmail());
-						jsonObj.put("pontos", jogador.getPonto());
+						jsonObj.put("email", jogador.getEmail());
+						jsonObj.put("points", jogador.getPonto());
 
 						jsonResult.put(jsonObj);
 
@@ -251,48 +241,25 @@ public class REST{
 
                 JSONObject json = new JSONObject(request.body());
 
-                String jogador = json.getString("jogador");
-
-
-                try {
-
-                    model.deleteJogador(jogador);
-
-
-
-                    JSONArray jsonResult = new JSONArray();
-                    JSONObject jsonObj = new JSONObject();
-
-                    jsonObj.put("status", 1);
-
-
-                    jsonResult.put(jsonObj);
-
-
-
-                    return jsonResult;
-
-
-
-
-
-                } catch (JSONException e) {
-
-                    e.printStackTrace();
-                }
+                String jogador = json.getString("email");
 
                 JSONArray jsonResult = new JSONArray();
                 JSONObject jsonObj = new JSONObject();
+                
+                try {
+                    model.deleteJogador(jogador);
 
-                jsonObj.put("status", 0);
+                    jsonObj.put("error", false);
+                    jsonResult.put(jsonObj);
+                    
 
-
-                jsonResult.put(jsonObj);
-
+                } catch (JSONException e) {
+                	jsonObj.put("error", true);
+                    jsonResult.put(jsonObj);
+                    e.printStackTrace();
+                }
+        
                 return jsonResult;
-
-
-
             }
         });
 
@@ -348,9 +315,6 @@ public class REST{
 			public Object handle(final Request request, final Response response) throws Exception {
 				
 				response.header("Acess-Control-Allow-Origin", "*");
-				System.out.println(request.headers("Content-Type"));
-				System.out.println(request.body());
-				
 				try
 				{
 					JSONObject dados = new JSONObject(new String(request.body().getBytes(), "UTF-8"));
@@ -399,7 +363,7 @@ public class REST{
 	            try {
 	            	JSONArray jsonResult = new JSONArray();
 	         	    JSONObject jsonObjQuestion = new JSONObject();
-	            	if(id<=MAX_PERGUNTAS){
+	            	if(id<=model.getConfig().getMAX_PERGUNTAS()){
 		            	Pergunta pergunta = model.pesquisaPerguntaPorId(id);
 		         	    if(pergunta!=null){
 		         	    	jsonObjQuestion.put("error", false);
@@ -426,6 +390,46 @@ public class REST{
 	        		}
 	         	    	
 	
+	     	    return null;
+	     	     
+	         }
+	         
+	      });
+		
+	}
+	
+public void getAllPerguntas(){
+		
+		get("/perguntas", new Route() {
+			@Override
+            public Object handle(final Request request, final Response response) throws UnsupportedEncodingException{
+	        	
+	        	response.header("Access-Control-Allow-Origin", "*");           
+	            try {
+	            	List<Pergunta> perguntas = model.getPerguntas();
+	            	JSONArray jsonResult = new JSONArray();
+	            	
+					for(Pergunta pergunta : perguntas){
+						JSONObject jsonObj = new JSONObject();
+						jsonObj.put("id", pergunta.getId());
+						jsonObj.put("enunciate", pergunta.getPergunta());
+						JSONArray jsonAlternativas = new JSONArray();
+						for(Alternativa a : pergunta.getAlternativas()){
+							JSONObject jsonAlternativa = new JSONObject();
+							jsonAlternativa.put("alternativa", a.getAlternativa());
+							jsonAlternativa.put("status", a.getStatus());
+							jsonAlternativas.put(jsonAlternativa);
+						}
+						jsonObj.put("alternativas", jsonAlternativas);
+						jsonResult.put(jsonObj);
+					}
+
+					return jsonResult;
+        		}catch (JSONException e) {
+        				
+        			e.printStackTrace();
+        		}
+	         	   
 	     	    return null;
 	     	     
 	         }
@@ -467,5 +471,79 @@ public class REST{
 	      });
 		
 	}
-
+	
+	public void deletePerguntaPorId(){
+		
+		get("/perguntas/delete/:id", new Route() {
+			@Override
+            public Object handle(final Request request, final Response response) throws UnsupportedEncodingException{
+	        	
+	        	response.header("Access-Control-Allow-Origin", "*");
+	        	//JSONObject dados = new JSONObject(new String(request.body().getBytes(), "UTF-8"));
+	        	JSONArray jsonResult = new JSONArray();
+	            
+	            try {
+	            	//int id = dados.getInt("id");
+	            	int id = Integer.parseInt(request.params(":id"));
+	         	    JSONObject jsonObjQuestion = new JSONObject();
+	            	if(id<=model.getConfig().getMAX_PERGUNTAS()){
+		            	
+	            		model.deleteQuestao(id);
+	            		
+	            		jsonObjQuestion.put("error", false);
+		         	    jsonResult.put(jsonObjQuestion);
+						return jsonResult;
+	            	}else{
+	            		jsonObjQuestion.put("error", true);
+	            		jsonObjQuestion.put("error_details", "ID fora de range.");
+	            		
+	            		jsonResult.put(jsonObjQuestion);
+	            		return jsonResult;
+	            	}
+	        		}catch (JSONException e) {
+	        			JSONObject jsonObjQuestion = new JSONObject();
+	        			jsonObjQuestion.put("error", true);
+	            		jsonObjQuestion.put("error_details", "Exception: "+e.getMessage());
+	            		jsonResult.put(jsonObjQuestion);
+	            		return jsonResult;
+	        		}     
+	         }
+	         
+	      });
+		
+	}
+	
+	public void addPergunta(){
+		
+		post("/perguntas/add", new Route() {
+			@Override
+            public Object handle(final Request request, final Response response) throws UnsupportedEncodingException{
+	        	
+	        	response.header("Access-Control-Allow-Origin", "*");
+	        	JSONObject dados = new JSONObject(new String(request.body().getBytes(), "UTF-8"));
+	        	JSONArray jsonResult = new JSONArray();
+	            
+	            try {
+	            	int id = dados.getInt("id");
+	         	    JSONObject jsonObjQuestion = new JSONObject();
+	         	    List<Alternativa> alternativas = new ArrayList<Alternativa>();
+					
+	         	    //Pergunta pergunta = new Pergunta(model.getConfig().getMAX_PERGUNTAS(), dados.getString("enunciate"), alternativas);
+            		//model.addPergunta(pergunta);
+            		System.out.println();
+            		jsonObjQuestion.put("error", false);
+	         	    jsonResult.put(jsonObjQuestion);
+					return jsonResult;
+        		}catch (JSONException e) {
+        			JSONObject jsonObjQuestion = new JSONObject();
+        			jsonObjQuestion.put("error", true);
+            		jsonObjQuestion.put("error_details", "Exception: "+e.getMessage());
+            		jsonResult.put(jsonObjQuestion);
+            		return jsonResult;
+        		}
+	         }
+	         
+	      });
+		
+	}
 }

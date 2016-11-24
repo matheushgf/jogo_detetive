@@ -1,72 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Assessment Skills - Search RA</title>
+<html lang="pt"> 
+	<head>
+	    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+	    <title>Editar Jogadores</title>
+	
+	    <script src="/js/jquery-2.2.3.min.js"></script>
+	    <link href="css/bootstrap.min.css" rel=stylesheet>
+		<script src="js/angular.min.js"></script>
+		<script src="js/controllers.js"></script>
+	</head>
 
-
-    <script src="/js/jquery-2.2.3.min.js"></script>
-
-
-    <link href="css/bootstrap.min.css" rel=stylesheet>
-
-    <script>
-		$(document).ready(function(){
-
-			$.getJSON("/users?format=json&jsoncallback=",function(data) {
-
-					var items = [];
-
-					$.each(data, function(i){
-
-
-						items.push("<tr> <td>"+ this.jogador + "</td> <td>" + this.pontos + "</td> <td><a class='btn btn-danger' role='button' href='/deleteUser.html?"+this.jogador+"'>Excluir </a> </td> </tr>" );
-
-					});
-
-					$("#dataRows").append(items);
-
-			});
-
-
-		});
-
-
-	</script>
-
-
-</head>
-<body background="http://www.portalgildabonfim.com.br/site/wp-content/uploads/2014/04/fundo-site.jpg">
-
-
-<div id="navbar" class="navbar navbar-default navbar-static-top">
-    <ul class="nav navbar-nav">
-        <li class="active"><a href="adm.html">Painel de Controle</a></li>
-        <li><a href="listUsers.html">Gerenciar Usuarios</a></li>
-    </ul>
-
-</div>
-</nav>
-
-<table class="table table-bordered">
-    <caption>Todos os Usuarios</caption>
-    <thead>
-    <tr>
-        <th>Usuarios ativos</th>
-        <th>Pontuação</th>
-        <th>Deletar Usuario</th>
-
-
-    </tr>
-    </thead>
-
-    <tbody id="dataRows">
-
-    </tbody>
-</table>
-
-
-
-
-</body>
+	<body background="images/fundo-site.jpg" ng-app="jogoApp" ng-controller="admUsersCtrl">
+		<div id="navbar" class="navbar navbar-default navbar-static-top">
+		    <ul class="nav navbar-nav">
+		        <li class="active"><a href="adm.html">Painel de Controle</a></li>
+		        <li><a href="listUsers.html">Gerenciar Usuarios</a></li>
+		    </ul>
+		</div>
+		
+		<table class="table table-bordered" ng-init="atualizaUsers()">
+		    <caption>Todos os Usuarios</caption>
+		    <thead>
+		    <tr>
+		        <th>Usuário</th>
+		        <th>Pontuação</th>
+		        <th>Deletar Usuário</th>
+		    </tr>
+		    </thead>
+		
+		    <tbody id="dataRows">
+				<tr ng-repeat="u in users">
+					<td>{{ u.email }}</td>
+				    <td>{{ u.points }}</td>
+				    <td><a class='btn btn-danger' role='button' ng-click="deletaUser(u.email)">Excluir</a></td>
+				</tr>
+		    </tbody>
+		</table>
+	</body>
 </html>

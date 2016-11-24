@@ -38,6 +38,9 @@ public class MainServer {
 		controller.getResposta();
 		controller.getPerguntaJogador();
 		controller.getRank();
+		controller.getAllPerguntas();
+		controller.deletePerguntaPorId();
+		controller.addPergunta();
     }
 
     public static void initialize (){
@@ -118,7 +121,8 @@ public class MainServer {
 		alternativas7.add(alt3);
 		pergunta = new Pergunta(6, "Fugiu para a capital do Brasil.",alternativas7);
 		model.addPergunta(pergunta);
-    }
+		
+		model.addConfig(new Config(6));    }
 
 
 }

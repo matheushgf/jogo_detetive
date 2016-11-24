@@ -1,6 +1,6 @@
 var app = angular.module("jogoApp", []);
 
-//Controller da página de RANK
+//----------Controller da página de RANK
 app.controller("rankCtrl", function($scope) {
 
 	var xhr = new XMLHttpRequest();
@@ -22,7 +22,7 @@ app.controller("rankCtrl", function($scope) {
 	xhr.send(null);	
 });
 
-//Controller da página das perguntas
+//----------Controller da página das perguntas
 app.controller("gameCtrl", function($scope, $http) {
 	
 	$scope.perguntaJogador;
@@ -113,4 +113,49 @@ app.controller("gameCtrl", function($scope, $http) {
 			}
 		});
 	}
+});
+
+//----------Controller da página ADM - Usuários
+app.controller("admUsersCtrl", function($scope, $http) {
+	$scope.atualizaUsers = function(){
+		$http.get("/users")
+		.then(function(response){
+			$scope.users = response.data;
+		});
+	}
+	
+	$scope.deletaUser = function(jog_email){
+		$http.post("/users/delete", {email: jog_email})
+		.then(function(response){
+			if(response.data[0].error) alert("ERRO AO DELETAR");
+			$scope.atualizaUsers();
+		});
+	}
+});
+
+//----------Controller da página ADM - Perguntas
+app.controller("admQuestionsCtrl", function($scope, $http) {
+	var userName = sessionStorage.getItem("userNameADM");
+	if(userName == null){
+		window.location.href = '/loginadm.html';
+	}
+	
+	$scope.btntext = "Editar";
+	$scope.editing = false;
+		
+	$scope.atualizaQuestions = function(){
+		$http.get("/perguntas")
+		.then(function(response){
+			$scope.questions = response.data;
+		});
+	}
+	
+	$scope.deletaQuestao = function(id){
+		$http.post("/users/delete", {email: jog_email})
+		.then(function(response){
+			if(response.data[0].error) alert("ERRO AO DELETAR");
+			$scope.atualizaUsers();
+		});
+	}
+	
 });

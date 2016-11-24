@@ -1,5 +1,6 @@
 package hello;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -12,10 +13,11 @@ import com.db4o.ObjectSet;
 import com.db4o.query.Query;
 
 public class Model{
-	ObjectContainer jogadores = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/jogadores3.db4o");
-	ObjectContainer admDB = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/admDB1.db4o");
-	ObjectContainer perguntas = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/perguntas2.db4o");
-    
+	ObjectContainer jogadores = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/jogadores.db4o");
+	ObjectContainer admDB = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/admDB.db4o");
+	ObjectContainer perguntas = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/perguntas.db4o");
+	ObjectContainer configs = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/config.db4o");
+   
 	public boolean isUserAvailable(String email){
 		Query query = jogadores.query();
 		query.constrain(Jogador.class);
@@ -37,8 +39,20 @@ public class Model{
 		Query query = jogadores.query();
 		query.constrain(Jogador.class);
 		ObjectSet<Jogador> jogadores = query.execute();
-
-		return jogadores;
+		
+		List<Jogador> allJogadores = new ArrayList<Jogador>();
+		for(Jogador jogador:jogadores){
+			allJogadores.add(jogador);
+		}
+		
+		Collections.sort(allJogadores, new Comparator<Jogador>() {
+			@Override
+		    public int compare(Jogador one, Jogador other) {
+		        return one.getEmail().compareTo(other.getEmail());
+		    }
+		});
+		
+		return allJogadores;
 	}
 
 	public void addAdm(Adm adm){
@@ -95,6 +109,26 @@ public class Model{
 	
 	public void addPergunta(Pergunta pergunta){
 		perguntas.store(pergunta);
+	}
+	
+	public List<Pergunta> getPerguntas(){
+		Query query = perguntas.query();
+		query.constrain(Pergunta.class);
+		ObjectSet<Pergunta> perguntas = query.execute();
+		
+		List<Pergunta> allPerguntas = new ArrayList<Pergunta>();
+		for(Pergunta pergunta:perguntas){
+			allPerguntas.add(pergunta);
+		}
+		
+		Collections.sort(allPerguntas, new Comparator<Pergunta>() {
+			@Override
+		    public int compare(Pergunta p1, Pergunta p2) {
+		        return p1.getId()-p2.getId();
+		    }
+		});
+		
+		return allPerguntas;
 	}
 	
 	public Pergunta iniciarJogo(){
@@ -195,6 +229,59 @@ public class Model{
 		if(acerto){
 			jogador.addPonto();
 		}
+	}
+	
+	public void deleteQuestao(int id) {
+		Query query = perguntas.query();
+		query.constrain(Pergunta.class);
+		List<Pergunta> allQuestions = query.execute();
+
+		for(Pergunta question:allQuestions){
+			if(question.getId()==id){
+				perguntas.delete(question);
+				perguntas.commit();
+				
+				for(Pergunta p:allQuestions){
+					if(p.getId()>=id){
+						p.setId(p.getId()-1);
+						perguntas.store(p);
+						perguntas.commit();
+					}
+				}
+				
+				changeConfig(getConfig().getMAX_PERGUNTAS()-1);
+				System.out.println("new max: "+String.valueOf(getConfig().getMAX_PERGUNTAS()));
+				break;
+			}
+		}
+	}
+	
+	public void addConfig(Config c){
+		configs.store(c);
+		configs.commit();
+	}
+	
+	public void changeConfig(int max){
+		Query query = configs.query();
+		query.constrain(Config.class);
+	    ObjectSet<Config> allConfigs = query.execute();
+	    
+	    for(Config c: allConfigs){
+	    	c.setMAX_PERGUNTAS(max);
+	    	configs.store(c);
+	    	configs.commit();
+	    }
+	}
+	
+	public Config getConfig(){
+		Query query = configs.query();
+		query.constrain(Config.class);
+	    ObjectSet<Config> allConfigs = query.execute();
+	    
+	    for(Config c: allConfigs){
+	    	return c;
+	    }
+		return null;
 	}
 
 }

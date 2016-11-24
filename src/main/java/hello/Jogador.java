@@ -1,7 +1,7 @@
 package hello;
 
 
-public class Jogador {
+public class Jogador{
 
     private String email;
     private String password;
