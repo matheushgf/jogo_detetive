@@ -474,17 +474,16 @@ public void getAllPerguntas(){
 	
 	public void deletePerguntaPorId(){
 		
-		get("/perguntas/delete/:id", new Route() {
+		post("/perguntas/delete", new Route() {
 			@Override
             public Object handle(final Request request, final Response response) throws UnsupportedEncodingException{
 	        	
 	        	response.header("Access-Control-Allow-Origin", "*");
-	        	//JSONObject dados = new JSONObject(new String(request.body().getBytes(), "UTF-8"));
+	        	JSONObject dados = new JSONObject(new String(request.body().getBytes(), "UTF-8"));
 	        	JSONArray jsonResult = new JSONArray();
 	            
 	            try {
-	            	//int id = dados.getInt("id");
-	            	int id = Integer.parseInt(request.params(":id"));
+	            	int id = dados.getInt("id");
 	         	    JSONObject jsonObjQuestion = new JSONObject();
 	            	if(id<=model.getConfig().getMAX_PERGUNTAS()){
 		            	
@@ -524,13 +523,17 @@ public void getAllPerguntas(){
 	        	JSONArray jsonResult = new JSONArray();
 	            
 	            try {
-	            	int id = dados.getInt("id");
 	         	    JSONObject jsonObjQuestion = new JSONObject();
 	         	    List<Alternativa> alternativas = new ArrayList<Alternativa>();
-					
-	         	    //Pergunta pergunta = new Pergunta(model.getConfig().getMAX_PERGUNTAS(), dados.getString("enunciate"), alternativas);
-            		//model.addPergunta(pergunta);
-            		System.out.println();
+					JSONArray alt = (JSONArray) dados.get("alternativas");
+					for(int i=0;i<alt.length();i++){
+						JSONObject a = alt.getJSONObject(i);
+						alternativas.add(new Alternativa(a.getString("alternativa"), a.getBoolean("status")));
+					}
+	         	    
+	         	    Pergunta pergunta = new Pergunta(model.getConfig().getMAX_PERGUNTAS()+1, dados.getString("enunciate"), alternativas);
+            		model.addPergunta(pergunta);
+            		System.out.println(model.getConfig().getMAX_PERGUNTAS());
             		jsonObjQuestion.put("error", false);
 	         	    jsonResult.put(jsonObjQuestion);
 					return jsonResult;

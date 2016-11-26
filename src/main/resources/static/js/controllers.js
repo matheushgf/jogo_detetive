@@ -140,9 +140,32 @@ app.controller("admQuestionsCtrl", function($scope, $http) {
 		window.location.href = '/loginadm.html';
 	}
 	
-	$scope.btntext = "Editar";
-	$scope.editing = false;
-		
+	$scope.pergunta = {
+		alternativas: []
+	};
+ 	
+	$scope.atualizaCorreta = function(){
+		switch($scope.correta){
+			case "alt1":
+				$scope.pergunta.alternativas[0].status=true;
+				$scope.pergunta.alternativas[1].status=false;
+				$scope.pergunta.alternativas[2].status=false;
+				break;
+			case "alt2":
+				$scope.pergunta.alternativas[0].status=false;
+				$scope.pergunta.alternativas[1].status=true;
+				$scope.pergunta.alternativas[2].status=false;
+				break;
+			case "alt3":
+				$scope.pergunta.alternativas[0].status=false;
+				$scope.pergunta.alternativas[1].status=false;
+				$scope.pergunta.alternativas[2].status=true;
+				break;
+		}
+	}
+	
+	$scope.$watch('correta', $scope.atualizaCorreta);
+	
 	$scope.atualizaQuestions = function(){
 		$http.get("/perguntas")
 		.then(function(response){
@@ -150,12 +173,28 @@ app.controller("admQuestionsCtrl", function($scope, $http) {
 		});
 	}
 	
-	$scope.deletaQuestao = function(id){
-		$http.post("/users/delete", {email: jog_email})
+	$scope.deletaQuestion = function(id){
+		$http.post("/perguntas/delete", {id: id})
 		.then(function(response){
-			if(response.data[0].error) alert("ERRO AO DELETAR");
-			$scope.atualizaUsers();
+			if(response.data[0].error) alert("ERRO AO DELETAR. Erro: "+response.data[0].error_details);
+			else $scope.atualizaQuestions();
 		});
 	}
+	
+	$scope.addQuestion = function(){
+		$http.post("/perguntas/add", $scope.pergunta)
+		.then(function(response){
+			if(response.data[0].error) alert("ERRO AO INSERIR");
+			else{
+				alert("INSERIDO COM SUCESSO!");
+				$scope.pergunta = {
+					alternativas: []
+				};
+				$scope.atualizaQuestions();
+			}
+		});
+	}
+	
+	
 	
 });

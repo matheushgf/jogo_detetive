@@ -109,6 +109,8 @@ public class Model{
 	
 	public void addPergunta(Pergunta pergunta){
 		perguntas.store(pergunta);
+		perguntas.commit();
+		changeConfig(getConfig().getMAX_PERGUNTAS()+1);
 	}
 	
 	public List<Pergunta> getPerguntas(){
