@@ -8,13 +8,16 @@
 	    <link href="css/bootstrap.min.css" rel=stylesheet>
 		<script src="js/angular.min.js"></script>
 		<script src="js/controllers.js"></script>
+		<script src="/js/sweetalert.min.js"></script>
+		<link href="css/sweetalert.css" rel="stylesheet">
 	</head>
-
-	<body background="images/fundo-site.jpg" ng-app="jogoApp" ng-controller="admUsersCtrl">
+	
+	<body background="images/fundo-site.jpg" ng-app="jogoApp" ng-controller="admUsersCtrl" ng-init="init()">
 		<div id="navbar" class="navbar navbar-default navbar-static-top">
 		    <ul class="nav navbar-nav">
 		        <li class="active"><a href="adm.html">Painel de Controle</a></li>
 		        <li><a href="listUsers.html">Gerenciar Usuarios</a></li>
+		        <li><a href="logoutadm.html">Logout</a></li>
 		    </ul>
 		</div>
 		

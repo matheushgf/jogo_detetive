@@ -1,7 +1,5 @@
 package hello;
 
-
-
 import static spark.Spark.get;
 import static spark.Spark.post;
 
@@ -142,13 +140,9 @@ public class REST{
 				String password = json.getString("password");
 				Jogador jogador = new Jogador(email, password);
 
-
 				try {
-
 					boolean statusAdd = model.addJogador(jogador);
-
 					if(statusAdd){
-
 						JSONArray jsonResult = new JSONArray();
 						JSONObject jsonObj = new JSONObject();
 
@@ -332,7 +326,7 @@ public class REST{
 							model.setarProxima(false, email);
 							jsonObj.put("resposta", "errado");
 							}
-						jsonObj.put("error",0);
+						jsonObj.put("error", false);
 						jsonResult.put(jsonObj);
 						return jsonResult;
 					}
@@ -341,7 +335,8 @@ public class REST{
 				{
 					JSONArray jsonResult = new JSONArray();
 					JSONObject jsonObj = new JSONObject();
-					jsonObj.put("error", 1);
+					jsonObj.put("error", true);
+					jsonObj.put("error_details", "Exception: " + e.getMessage());
 					jsonResult.put(jsonObj);
 				}
 				return null;
@@ -380,18 +375,17 @@ public class REST{
 	            	}else{
 	            		jsonObjQuestion.put("error", false);
 	            		jsonObjQuestion.put("over", true);
-	            		
 	            		jsonResult.put(jsonObjQuestion);
 	            		return jsonResult;
 	            	}
 	        		}catch (JSONException e) {
-	        				
+	        			JSONArray jsonResult = new JSONArray();
+		         	    JSONObject jsonObjQuestion = new JSONObject();
+	        			jsonObjQuestion.put("error_details", "Exception: "+e.getMessage());	
 	        			e.printStackTrace();
-	        		}
-	         	    	
-	
-	     	    return null;
-	     	     
+	        			jsonResult.put(jsonObjQuestion);
+						return jsonResult;
+	        		} 	   
 	         }
 	         
 	      });
@@ -463,13 +457,12 @@ public void getAllPerguntas(){
 	        			JSONArray jsonResult = new JSONArray();
 		         	    JSONObject jsonObjQuestion = new JSONObject();
 		         	    jsonObjQuestion.put("error", true); 
+		         	   jsonObjQuestion.put("error_details", "Exception: " + e.getMessage());
 		        		jsonResult.put(jsonObjQuestion);
 		        		return jsonResult;
 	        		} 
 	         }
-	         
 	      });
-		
 	}
 	
 	public void deletePerguntaPorId(){
@@ -533,7 +526,6 @@ public void getAllPerguntas(){
 	         	    
 	         	    Pergunta pergunta = new Pergunta(model.getConfig().getMAX_PERGUNTAS()+1, dados.getString("enunciate"), alternativas);
             		model.addPergunta(pergunta);
-            		System.out.println(model.getConfig().getMAX_PERGUNTAS());
             		jsonObjQuestion.put("error", false);
 	         	    jsonResult.put(jsonObjQuestion);
 					return jsonResult;
@@ -544,6 +536,36 @@ public void getAllPerguntas(){
             		jsonResult.put(jsonObjQuestion);
             		return jsonResult;
         		}
+	         }
+	         
+	      });
+	}
+	
+	public void isAvailable(){
+		
+		get("/users/available/:email", new Route() {
+			@Override
+            public Object handle(final Request request, final Response response) throws UnsupportedEncodingException{
+	        	
+				response.header("Access-Control-Allow-Origin", "*");
+	        	 
+	            String email = request.params(":email");
+	            
+	            try {
+	            	JSONArray jsonResult = new JSONArray();
+	         	    JSONObject jsonObjQuestion = new JSONObject();
+	         	    jsonObjQuestion.put("error", false);	
+	         	    jsonObjQuestion.put("available", model.isUserAvailable(email));
+	        		jsonResult.put(jsonObjQuestion);
+	             	return jsonResult;
+	        	}catch (JSONException e) {	        			
+	        		e.printStackTrace();
+	        		JSONArray jsonResult = new JSONArray();
+		         	JSONObject jsonObjQuestion = new JSONObject();
+		         	jsonObjQuestion.put("error", true); 
+		         	jsonResult.put(jsonObjQuestion);
+		        	return jsonResult;
+	        	} 
 	         }
 	         
 	      });

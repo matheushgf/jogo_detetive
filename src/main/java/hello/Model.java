@@ -19,9 +19,7 @@ public class Model{
 	ObjectContainer configs = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(), "bd/config.db4o");
    
 	public boolean isUserAvailable(String email){
-		Query query = jogadores.query();
-		query.constrain(Jogador.class);
-		ObjectSet<Jogador> allJogadores = query.execute();
+		List<Jogador> allJogadores = getJogadores();
 
 		for (Jogador jogador : allJogadores){
 			if (jogador.getEmail().equals(email)) return false;
@@ -29,6 +27,7 @@ public class Model{
 
 		return true;
 	}
+	
 	public boolean addJogador(Jogador jogador){
 		jogadores.store(jogador);
 		jogadores.commit();
@@ -252,7 +251,6 @@ public class Model{
 				}
 				
 				changeConfig(getConfig().getMAX_PERGUNTAS()-1);
-				System.out.println("new max: "+String.valueOf(getConfig().getMAX_PERGUNTAS()));
 				break;
 			}
 		}

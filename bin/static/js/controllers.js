@@ -1,6 +1,6 @@
 var app = angular.module("jogoApp", []);
 
-//----------Controller da p�gina de RANK
+//----------Controller da página de RANK
 app.controller("rankCtrl", function($scope) {
 
 	var xhr = new XMLHttpRequest();
@@ -22,45 +22,44 @@ app.controller("rankCtrl", function($scope) {
 	xhr.send(null);	
 });
 
-//----------Controller da p�gina das perguntas
+//----------Controller da p�gina das perguntas
 app.controller("gameCtrl", function($scope, $http) {
 	
 	$scope.perguntaJogador;
 	$scope.email = sessionStorage.getItem("email");
 	if($scope.email == null){
-		window.location.href = '/index.html';
+		swal({
+			title: "Não logado",
+			type: "warning",
+			text: "Usuário não logado! Redirecionando para a página de login de ADM.",
+			showConfirmButton: true,
+			html: true
+		},
+			function(){
+				window.location.href = '/index.html';
+			}
+		);
 	}
 	
 	$scope.getPergunta = function(){
 		
-		var url = "/getpergunta/"+$scope.email+"?format=json";
-		/*
-		var xhr = new XMLHttpRequest();
-		xhr.onload = function (e) {
-			  if (xhr.readyState === 4) {
-			    if (xhr.status === 200) {
-			    	var data = jQuery.parseJSON(xhr.responseText);
-			      	console.log(data[0].pergunta);
-			      	sessionStorage.setItem("perguntajogador",data[0].pergunta);
-			      	$scope.jogadorper = data[0].pergunta;
-			    } else {
-			      console.error(xhr.statusText);
-			    }
-			  }
-			};
-		xhr.open("GET", url, false);
-		xhr.onerror = function (e) {
-		  console.error(xhr.statusText);
-		};
-		xhr.send(null);*/
+		var url = "/getperguntaa/"+$scope.email+"?format=json";
 		
 		$http.get(url).then(function(response){
 			if(response.data[0].error == false){
 				$scope.perguntaJogador=response.data[0].pergunta;
 				$scope.atualizarQuestao();
 			}else{
-				console.log('ERRO PEGANDO NUMERO DA PERGUNTA');
-				window.location.href = '/index.html';
+				swal({
+					title: "Erro",
+					text: "Erro ao pegar número da pergunta! Contate o administrador.",
+					showConfirmButton: true,
+					html: true,
+					type: "error"
+				},function(){
+					window.location.href = '/index.html';
+				});
+				
 			}
 		});
 	}
@@ -79,11 +78,16 @@ app.controller("gameCtrl", function($scope, $http) {
 					$("#op2").attr($scope.op2);
 					$("#op3").attr($scope.op3);
 				}else{
-					console.log('ACABARAM AS PERGUNTAS');
 					window.location.href = '/rank.html';
 				}
 			}else{
-				console.log('ERRO ATUALIZANDO A PERGUNTA');
+				swal({
+					title: "Erro",
+					text: "Erro ao atualizar pergunta! Contate o administrador.",
+					timer: 2000,
+					showConfirmButton: false,
+					html: true
+				});
 				window.location.href = '/index.html';
 			}
 		});
@@ -105,18 +109,41 @@ app.controller("gameCtrl", function($scope, $http) {
 		.then(function(response){
 			var dados = response.data[0];
 			console.log(dados);
-			if(dados.error==0){
+			if(dados.error==false){
 				$scope.getPergunta();
 			} else {
-				console.log("ERRO APLICANDO RESPOSTA");
+				swal({
+					title: "Erro",
+					text: "Erro ao aplicar resposta! Contate o administrador.",
+					timer: 2000,
+					showConfirmButton: false,
+				});
 				window.location.href = '/sucess.html';
 			}
 		});
 	}
 });
 
-//----------Controller da p�gina ADM - Usu�rios
+//----------Controller da página ADM - Usuários
 app.controller("admUsersCtrl", function($scope, $http) {
+
+	$scope.init = function(){
+		var userName = sessionStorage.getItem("userNameADM");
+		if(userName === "null"){
+			swal({
+				title: "Não logado",
+				type: "warning",
+				text: "Usuário não logado! Redirecionando para a página de login de ADM.",
+				showConfirmButton: true,
+				html: true
+			},
+				function(){
+					window.location.href = '/loginadm.html';
+				}
+			);
+		}
+	}
+	
 	$scope.atualizaUsers = function(){
 		$http.get("/users")
 		.then(function(response){
@@ -127,17 +154,38 @@ app.controller("admUsersCtrl", function($scope, $http) {
 	$scope.deletaUser = function(jog_email){
 		$http.post("/users/delete", {email: jog_email})
 		.then(function(response){
-			if(response.data[0].error) alert("ERRO AO DELETAR");
+			if(response.data[0].error){
+				swal({
+					title: "Error ao deletar",
+					type: "error",
+					text: "Erro ao deletar usuário! Tente novamente. <p> Mensagem de erro: "+response.data[0].error_details,
+					showConfirmButton: true,
+					html: true
+				});
+			}
 			$scope.atualizaUsers();
 		});
 	}
 });
 
-//----------Controller da p�gina ADM - Perguntas
+//----------Controller da página ADM - Perguntas
 app.controller("admQuestionsCtrl", function($scope, $http) {
-	var userName = sessionStorage.getItem("userNameADM");
-	if(userName == null){
-		window.location.href = '/loginadm.html';
+	
+	$scope.init = function(){
+		var userName = sessionStorage.getItem("userNameADM");
+		if(userName === "null"){
+			swal({
+				title: "Não logado",
+				type: "warning",
+				text: "Usuário não logado! Redirecionando para a página de login de ADM.",
+				showConfirmButton: true,
+				html: true
+			},
+				function(){
+					window.location.href = '/loginadm.html';
+				}
+			);
+		}
 	}
 	
 	$scope.pergunta = {
@@ -176,7 +224,15 @@ app.controller("admQuestionsCtrl", function($scope, $http) {
 	$scope.deletaQuestion = function(id){
 		$http.post("/perguntas/delete", {id: id})
 		.then(function(response){
-			if(response.data[0].error) alert("ERRO AO DELETAR. Erro: "+response.data[0].error_details);
+			if(response.data[0].error){
+				swal({
+					title: "Error ao deletar",
+					type: "error",
+					text: "Erro ao deletar pergunta! Tente novamente. <p> Mensagem de erro: "+response.data[0].error_details,
+					showConfirmButton: true,
+					html: true
+				});
+			}
 			else $scope.atualizaQuestions();
 		});
 	}
@@ -184,9 +240,23 @@ app.controller("admQuestionsCtrl", function($scope, $http) {
 	$scope.addQuestion = function(){
 		$http.post("/perguntas/add", $scope.pergunta)
 		.then(function(response){
-			if(response.data[0].error) alert("ERRO AO INSERIR");
+			if(response.data[0].error){
+				swal({
+					title: "Error ao inserir",
+					type: "error",
+					text: "Erro ao inserir pergunta! Tente novamente. <p> Mensagem de erro: "+response.data[0].error_details,
+					showConfirmButton: true,
+					html: true
+				});
+			}
 			else{
-				alert("INSERIDO COM SUCESSO!");
+				swal({
+					title: "Sucesso",
+					type: "success",
+					text: "Pergunta incluída com sucesso",
+					showConfirmButton: true,
+					html: true
+				});
 				$scope.pergunta = {
 					alternativas: []
 				};

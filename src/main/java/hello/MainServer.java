@@ -38,14 +38,14 @@ public class MainServer {
 		controller.getAllPerguntas();
 		controller.deletePerguntaPorId();
 		controller.addPergunta();
+		controller.isAvailable();
     }
 
     public static void initialize (){
     	model.deleteJogador("a@a.com");
         model.addJogador(new Jogador("a@a.com", "1"));
         model.addAdm(new Adm("adm", "game"));
-		
-		System.out.println(model.getConfig().getMAX_PERGUNTAS());
+        model.addAdm(new Adm("adm1", "game1"));
 		 }
 
 
