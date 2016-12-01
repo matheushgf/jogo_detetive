@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -132,38 +130,6 @@ public class Model{
 		return allPerguntas;
 	}
 	
-	public Pergunta iniciarJogo(){
-		Query query = perguntas.query();
-		query.constrain(Pergunta.class);
-	    ObjectSet<Pergunta> allPerguntas = query.execute();
-	    
-	    Random rand = new Random(); 
-	    int idPrimeiraPergunta = rand.nextInt(allPerguntas.size() - 1);
-	    
-	    for(Pergunta pergunta: allPerguntas){
-	    	if(pergunta.getId() == idPrimeiraPergunta) return pergunta;
-	    }
-	    
-	    return null;
-	}
-	
-	public Pergunta perguntar(int ultimoId){
-		Query query = perguntas.query();
-		query.constrain(Pergunta.class);
-	    ObjectSet<Pergunta> allPerguntas = query.execute();
-	    
-	    int idPergunta = 0;
-	    int total = allPerguntas.size();
-	    if(ultimoId != total){
-	    	idPergunta = ultimoId +1;
-	    }
-	    
-	    for(Pergunta pergunta: allPerguntas){
-	    	if(pergunta.getId() == idPergunta) return pergunta;
-	    }
-	    
-	    return null;
-	}
 	
 	public Pergunta pesquisaPerguntaPorId(int id){
 		
