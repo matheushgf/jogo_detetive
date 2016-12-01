@@ -130,7 +130,6 @@ public class Model{
 		return allPerguntas;
 	}
 	
-	
 	public Pergunta pesquisaPerguntaPorId(int id){
 		
 		Query query = perguntas.query();
