@@ -1,5 +1,9 @@
 eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources/static=UTF-8
 encoding//src/main/resources/static/adm.html=UTF-8
-encoding//src/main/resources/static/created.html=UTF-8
+encoding//src/main/resources/static/createplayer.html=UTF-8
+encoding//src/main/resources/static/js=UTF-8
 encoding//src/main/resources/static/js/controllers.js=UTF-8
 encoding//src/main/resources/static/listUsers.html=UTF-8
+encoding//src/main/resources/static/sobre.html=UTF-8

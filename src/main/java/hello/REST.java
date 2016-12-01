@@ -28,43 +28,40 @@ public class REST{
 
 	public void getLogin(){
 
-		get("/login/:username/:password", new Route() {
+		post("/login", new Route() {
 
 			@Override
             public Object handle(final Request request, final Response response){
 
 	        	response.header("Access-Control-Allow-Origin", "*");
-
+	        	JSONArray jsonResult = new JSONArray();
+         	    JSONObject jsonObj = new JSONObject();
 
 	            try {
-	            	Jogador jogador = model.login(request.params(":username"), request.params(":password"));
+	            	JSONObject data = new JSONObject(request.body());
+	            	Jogador jogador = model.login(data.getString("email"), data.getString("password"));
 
 	            	if(jogador != null){
-
-	            		JSONArray jsonResult = new JSONArray();
-		         	    JSONObject jsonObj = new JSONObject();
-
+	            		jsonObj.put("error", false);
+		         	    jsonObj.put("logged", true);
 		        		jsonObj.put("email", jogador.getEmail());
 		             	jsonResult.put(jsonObj);
 
 		             	return jsonResult;
-
 	            	} else {
+	            		jsonObj.put("error", false);
+	            		jsonObj.put("logged", false);
+		             	jsonResult.put(jsonObj);
 
+		             	return jsonResult;
 	            	}
 	        		} catch (JSONException e) {
 	        			e.printStackTrace();
+	        			jsonObj.put("error", true);
+		        		jsonObj.put("error_details", e.getMessage());
+		             	jsonResult.put(jsonObj);
+		             	return jsonResult;
 	        		}
-
-
-	            JSONArray jsonResult = new JSONArray();
-         	    JSONObject jsonObj = new JSONObject();
-
-        		jsonObj.put("email", "");
-
-             	jsonResult.put(jsonObj);
-
-             	return jsonResult;
 	         }
 
 	      });
@@ -79,57 +76,49 @@ public class REST{
 				response.header("Access-Control-Allow-Origin", "*");
 
 				JSONObject json = new JSONObject(request.body());
-				String userName = json.getString("userName");
+				String username = json.getString("username");
 				String password = json.getString("password");
+				JSONArray jsonResult = new JSONArray();
+				JSONObject jsonObj = new JSONObject();
 
 
 				try {
-					Adm adm = model.admLogin(userName, password);
+					Adm adm = model.admLogin(username, password);
 
 					if(adm != null){
 
-						JSONArray jsonResult = new JSONArray();
-						JSONObject jsonObj = new JSONObject();
-
-						jsonObj.put("status", 1);
+						jsonObj.put("error", false);
+						jsonObj.put("logged", true);
 						jsonObj.put("userName", adm.getUsername());
-
 						jsonResult.put(jsonObj);
 
 						return jsonResult;
 
-					} else {
+					}else {
+						jsonObj.put("error", false);
+						jsonObj.put("logged", false);
+						jsonObj.put("userName", "");
+						jsonResult.put(jsonObj);
 
+						return jsonResult;
 					}
 
 
 
 				} catch (JSONException e) {
-
-					//e.printStackTrace();
-
+					jsonObj.put("error", true);
+					jsonObj.put("logged", e.getMessage());
+					jsonResult.put(jsonObj);
+					
+					return jsonResult;
 				}
-
-
-				JSONArray jsonResult = new JSONArray();
-				JSONObject jsonObj = new JSONObject();
-
-				jsonObj.put("status", 0);
-
-
-				jsonResult.put(jsonObj);
-
-				return jsonResult;
-
-
-
 			}
 		});
 
 
 	}
 	public void addJogadores(){
-		post("/jogador/add", new Route() {
+		post("/users/add", new Route() {
 
 			@Override
 			public Object handle(final Request request, final Response response){
@@ -146,7 +135,7 @@ public class REST{
 						JSONArray jsonResult = new JSONArray();
 						JSONObject jsonObj = new JSONObject();
 
-						jsonObj.put("status", 1);
+						jsonObj.put("error", false);
 						jsonObj.put("email", jogador.getEmail());
 						jsonObj.put("password", jogador.getPassword());
 
@@ -562,7 +551,8 @@ public void getAllPerguntas(){
 	        		e.printStackTrace();
 	        		JSONArray jsonResult = new JSONArray();
 		         	JSONObject jsonObjQuestion = new JSONObject();
-		         	jsonObjQuestion.put("error", true); 
+		         	jsonObjQuestion.put("error", true);
+		         	jsonObjQuestion.put("error_details", e.getMessage()); 
 		         	jsonResult.put(jsonObjQuestion);
 		        	return jsonResult;
 	        	} 

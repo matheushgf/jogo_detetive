@@ -3,54 +3,16 @@
   <head>
     <meta charset="utf-8">
     <title>Login</title>
-	
-    
 	<script src="/js/jquery-2.2.3.min.js"></script>
-	<link href="/css/bootstrap.min.css" rel=stylesheet>
+    <link href="css/bootstrap.min.css" rel=stylesheet>
+    <link href="css/jogo.css" rel=stylesheet>
+	<script src="js/angular.min.js"></script>
+	<script src="js/controllers.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+	<link href="css/sweetalert.css" rel="stylesheet">
 	
-	<script>
-		$(document).ready(function(){
-
-			$('form').submit(function(e){
-
-				e.preventDefault();
-
-				var username = $('#username').val().trim();
-				var password = $('#password').val().trim();
-
-				$.getJSON("/login/"+username+"/"+password+"?format=json&jsoncallback=",function(data) {
-
-					if(data[0].email == ""){
-
-					window.alert("Senha Incorreta");
-
-					} else
-						sessionStorage.setItem("email",username);
-						$.getJSON("/getpergunta/"+username+"?format=json&jsoncallback=",function(data) {
-							sessionStorage.setItem("perguntajogador",data[0].pergunta);
-							console.log("FOI");
-					
-						});
-						window.location.href = '/game.html';
-
-				});
-			});
-
-			$("#Register").click(function() {
-				window.location.href = '/createplayer.html';
-
-			});
-
-			$("#Administrador").click(function() {
-				window.location.href = '/loginadm.html';
-
-			});
-		});
-
-	</script>
-
   </head>
-  <body  background="images/fundo-site.jpg">
+  <body  background="images/fundo-site.jpg" ng-app="jogoApp">
   		<nav class="navbar navbar-default">
 		      <div class="container">
 		        <div class="navbar-header">
@@ -67,31 +29,38 @@
 		            <li class="active"><a href="index.html">Home</a></li>
 		            <li><a href="sobre.html">Sobre</a></li>
 		            <li><a href="adm.html">Adm</a></li>
+		            <li><a href="createplayer.html">Registrar-se</a></li>
 		          </ul>
 		        </div>
 		      </div>
 		</nav>
 		<br>
 		<br>
-		<form class="form-horizontal" method="post" id="form">
-			<div class="form-group">
-				<label for="inputEmail3" class="col-md-4 control-label">Email</label>
-				<div class="col-md-4">
-					<input required="required" type="email" class="form-control" id="username" placeholder="Email">
+		<div ng-controller="loginCtrl">
+			<form class="form-horizontal form-css" name="form" novalidate>
+				<div class="form-group">
+					<label for="email" class="col-md-4 control-label">Email</label>
+					<div class="col-md-4">
+						<input required type="email" class="form-control" name="email" placeholder="Email" ng-model="user.email">
+					</div>
+					<div ng-show="form.$submitted || form.email.$touched">
+						<span ng-show="form.email.$error.required">Campo obrigatório.</span>
+						<span ng-show="form.email.$error.email">Email não é válido. Tente outro. Ex: exemplo@provedor.com</span>
+					</div>
 				</div>
-			</div>
-			<div class="form-group">
-				<label for="inputPassword3" class="col-md-4 control-label">Password</label>
-				<div class="col-md-4">
-					<input required="required" type="password" class="form-control" id="password" placeholder="Password">
+				<div class="form-group">
+					<label for="password" class="col-md-4 control-label">Password</label>
+					<div class="col-md-4">
+						<input required type="password" class="form-control" name="password" placeholder="Password" ng-model="user.password">
+					</div>
+					<div ng-show="form.$submitted || form.password.$touched">
+						<span ng-show="form.password.$error.required">Campo obrigatório.</span>
+					</div>
 				</div>
-			</div>
-			<br>
-			<button id="login" type="submit" class="btn btn-primary col-md-offset-4 col-md-4">Login</button>
-		</form>
-		<button id="Register" type="submit" class="btn btn-primary col-md-offset-4 col-md-4">Registrar</button>
-		<button id="Administrador" type="submit" class="btn btn-primary col-md-offset-4 col-md-4">Admin</button>
-
+				<br>
+				<input id="login" type="submit" class="btn btn-primary col-md-offset-4 col-md-4" ng-click="logar(form, user)" value="Entrar">
+			</form>
+		</div>
   </body>
 </html>
 

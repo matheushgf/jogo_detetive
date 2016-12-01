@@ -3,13 +3,15 @@
   <head>
     <meta charset="utf-8">
     <title>Login</title>
-	
-    
 	<script src="/js/jquery-2.2.3.min.js"></script>
-	<link href="/css/bootstrap.min.css" rel=stylesheet>
+    <link href="css/bootstrap.min.css" rel=stylesheet>
+    <link href="css/jogo.css" rel=stylesheet>
+	<script src="js/angular.min.js"></script>
+	<script src="js/controllers.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+	<link href="css/sweetalert.css" rel="stylesheet">
 	
-	
-	<script>
+	<script>/*
 		$(document).ready(function(){
 
 			$('form').submit(function(e){
@@ -36,43 +38,53 @@
 
 				});
 			});
-
-			$("#Register").click(function() {
-				window.location.href = '/createplayer.html';
-
-			});
-
-			$("#Administrador").click(function() {
-				window.location.href = '/loginadm.html';
-
-			});
 		});
-
+			*/
 	</script>
 
   </head>
-  <body  background="images/fundo-site.jpg">
+  <body  background="images/fundo-site.jpg" ng-app="jogoApp">
+  		<nav class="navbar navbar-default">
+		      <div class="container">
+		        <div class="navbar-header">
+		          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+		            <span class="sr-only">Toggle navigation</span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		          </button>
+		          <a class="navbar-brand"><img src="/images/logo.png" alt="Jogo Detetive"></a>
+		        </div>
+		        <div id="navbar" class="collapse navbar-collapse">
+		          <ul class="nav navbar-nav">
+		            <li class="active"><a href="index.html">Home</a></li>
+		            <li><a href="sobre.html">Sobre</a></li>
+		            <li><a href="adm.html">Adm</a></li>
+		            <li><a href="createplayer.html">Registrar-se</a></li>
+		          </ul>
+		        </div>
+		      </div>
+		</nav>
 		<br>
 		<br>
-		<form class="form-horizontal" method="post" id="form">
-			<div class="form-group">
-				<label for="inputEmail3" class="col-md-4 control-label">Email</label>
-				<div class="col-md-4">
-					<input required="required" type="email" class="form-control" id="username" placeholder="Email">
+		<div ng-controller="loginCtrl">
+			<form class="form-horizontal form-css" name="form" novalidate>
+				<div class="form-group">
+					<label for="email" class="col-md-4 control-label">Email</label>
+					<div class="col-md-4">
+						<input required type="email" class="form-control" name="email" placeholder="Email">
+					</div>
 				</div>
-			</div>
-			<div class="form-group">
-				<label for="inputPassword3" class="col-md-4 control-label">Password</label>
-				<div class="col-md-4">
-					<input required="required" type="password" class="form-control" id="password" placeholder="Password">
+				<div class="form-group">
+					<label for="inputPassword3" class="col-md-4 control-label">Password</label>
+					<div class="col-md-4">
+						<input required="required" type="password" class="form-control" id="password" placeholder="Password">
+					</div>
 				</div>
-			</div>
-			<br>
-			<button id="login" type="submit" class="btn btn-primary col-md-offset-4 col-md-4">Login</button>
-		</form>
-		<button id="Register" type="submit" class="btn btn-primary col-md-offset-4 col-md-4">Registrar</button>
-		<button id="Administrador" type="submit" class="btn btn-primary col-md-offset-4 col-md-4">Admin</button>
-
+				<br>
+				<button id="login" type="submit" class="btn btn-primary col-md-offset-4 col-md-4">Login</button>
+			</form>
+		</div>
   </body>
 </html>
 

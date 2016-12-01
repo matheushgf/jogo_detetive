@@ -22,7 +22,7 @@ app.controller("rankCtrl", function($scope) {
 	xhr.send(null);	
 });
 
-//----------Controller da p�gina das perguntas
+//----------Controller da página das perguntas
 app.controller("gameCtrl", function($scope, $http) {
 	
 	$scope.perguntaJogador;
@@ -43,7 +43,7 @@ app.controller("gameCtrl", function($scope, $http) {
 	
 	$scope.getPergunta = function(){
 		
-		var url = "/getperguntaa/"+$scope.email+"?format=json";
+		var url = "/getpergunta/"+$scope.email+"?format=json";
 		
 		$http.get(url).then(function(response){
 			if(response.data[0].error == false){
@@ -264,7 +264,179 @@ app.controller("admQuestionsCtrl", function($scope, $http) {
 			}
 		});
 	}
+});
 	
+//----------Controller da página de REGISTRO
+app.controller("registerCtrl", function($scope, $http) {
 	
-	
+	$scope.match = false;
+	$scope.user = {password:""};
+	$scope.confirm = "";
+
+	$scope.registerUser = function(form, user){
+		if(form.$valid && $scope.match){
+			$http.get("/users/available/"+user.email)
+			.then(function(response){
+				if(response.data[0].error){
+					swal({
+						title: "Erro",
+						type: "error",
+						text: "Erro ao checar disponibilidade! Tente novamente. <p> Mensagem de erro: "+response.data[0].error_details,
+						showConfirmButton: true,
+						html: true
+					});
+				}else{
+					if(response.data[0].available){
+						$http.post("/users/add",user)
+						.then(function(response1){
+							if(response1.data[0].error){
+								swal({
+									title: "Erro",
+									type: "error",
+									text: "Erro ao criar conta! Tente novamente. <p> Mensagem de erro: "+response1.data[0].error_details,
+									showConfirmButton: true,
+									html: true
+								});
+							}else{
+								swal({
+									title: "Criado com sucesso!",
+									type: "success",
+									text: "Jogador cadastrado com sucesso! Redirecionando para a página de login...",
+									showConfirmButton: true,
+									timer:5000,
+									html: true
+								},
+								function(){
+									window.location.href = '/index.html';
+								});
+							}
+						});
+					}else{
+						swal({
+							title: "Email em uso",
+							type: "warning",
+							text: "Email já está sendo utilizado! Por favor, entre em contato com o administrador caso não lembre sua senha.",
+							showConfirmButton: true,
+							html: true
+						});
+					}
+				}
+			});
+		}else{
+			swal({
+					title: "Campos inválidos",
+					type: "warning",
+					text: "Erro ao cadastrar. Cheque os campos para verificar erros.",
+					showConfirmButton: true,
+					html: true
+				});
+		}
+	}
+
+	$scope.$watchGroup(['user.password', 'confirm'], function(newValues, oldValues, scope) {
+		if(newValues[0]!=undefined && newValues!=undefined){
+	  		if(newValues[0]===newValues[1]) $scope.match = true;
+	  		else $scope.match = false;
+	  	}else $scope.match = false;
+	});
+});
+
+//----------Controller das páginas de LOGIN
+app.controller("loginCtrl", function($scope, $http) {
+	 $scope.logar = function(form, user){
+	 	if(form.$valid){
+	 		$http.post("/login", user)
+	 		.then(function(response){
+	 			if(response.data[0].error){
+					swal({
+						title: "Erro",
+						type: "error",
+						text: "Erro ao logar! Tente novamente. <p> Mensagem de erro: "+response.data[0].error_details,
+						showConfirmButton: true,
+						html: true
+					});
+				}else{
+					if(response.data[0].logged){
+						sessionStorage.setItem("email", user.email);
+						swal({
+						title: "Sucesso",
+						type: "success",
+						text: "Redirecionando para a página do jogo...",
+						timer: 4000,
+						showConfirmButton: true,
+						html: true
+						}, function(){
+							window.location.href = '/game.html';
+						});
+					}else{
+						swal({
+						title: "Erro",
+						type: "warning",
+						text: "Não foi possível logar, verifique seu email e senha e tente novamente.",
+						showConfirmButton: true,
+						html: true
+					});
+					}
+				}
+	 		});
+	 	}else{
+	 		swal({
+					title: "Campos inválidos",
+					type: "warning",
+					text: "Erro ao entrar. Cheque os campos para verificar erros.",
+					showConfirmButton: true,
+					html: true
+				});
+	 	}
+	 }
+});
+
+//----------Controller das páginas de LOGIN ADMINISTRATIVO
+app.controller("loginADMCtrl", function($scope, $http) {
+	 $scope.logar = function(form, user){
+	 	if(form.$valid){
+	 		$http.post("/login/adm", user)
+	 		.then(function(response){
+	 			if(response.data[0].error){
+					swal({
+						title: "Erro",
+						type: "error",
+						text: "Erro ao logar! Tente novamente. <p> Mensagem de erro: "+response.data[0].error_details,
+						showConfirmButton: true,
+						html: true
+					});
+				}else{
+					if(response.data[0].logged){
+						sessionStorage.setItem("userNameADM", user.username);
+						swal({
+						title: "Sucesso",
+						type: "success",
+						text: "Redirecionando para a página Administrativa...",
+						timer: 4000,
+						showConfirmButton: true,
+						html: true
+						}, function(){
+							window.location.href = '/adm.html';
+						});
+					}else{
+						swal({
+						title: "Erro",
+						type: "warning",
+						text: "Não foi possível logar, verifique seu usuário e senha e tente novamente.",
+						showConfirmButton: true,
+						html: true
+					});
+					}
+				}
+	 		});
+	 	}else{
+	 		swal({
+					title: "Campos inválidos",
+					type: "warning",
+					text: "Erro ao entrar. Cheque os campos para verificar erros.",
+					showConfirmButton: true,
+					html: true
+				});
+	 	}
+	 }
 });

@@ -8,33 +8,82 @@
 		<script src="js/angular.min.js"></script>
 		<script src="js/controllers.js"></script>
 	    <link href="css/bootstrap.min.css" rel=stylesheet>
+	    <script src="/js/sweetalert.min.js"></script>
+		<link href="css/sweetalert.css" rel="stylesheet">
+		<link href="/css/bootstrap.min.css" rel=stylesheet>
 	</head>
 
-	<body background="images/fundo-site.jpg" ng-app="jogoApp" ng-controller="admQuestionsCtrl">
+	<body background="images/fundo-site.jpg" ng-app="jogoApp" ng-controller="admQuestionsCtrl" ng-init="init()">
 		<nav class="navbar navbar-default navbar-static-top">
 			<div id="navbar" class="navbar-collapse collapse">
 		        <ul class="nav navbar-nav">
 		            <li class="active"><a href="adm.html">Painel de Controle</a></li>
 		            <li><a href="listUsers.html">Gerenciar Usuarios</a></li>
+		            <li><a href="logoutadm.html">Logout</a></li>
 		        </ul>
 			</div>
 		</nav>
-		<table class="table table-bordered" ng-init="atualizaQuestions()">
+		
+		<form class="form-horizontal">
+			<div class="form-group" class="col-sm-8">
+				<label class="control-label col-sm-1" for="enunciate">Enunciado:</label>
+				<div class="col-sm-8">
+					<input id="enunciate" class="form-control" type="text" ng-model="pergunta.enunciate">
+				</div>
+			</div>
+			
+			<div class="form-group form-inline" class="col-sm-8">
+				<label class="control-label col-sm-2" for="alt1-text">Alternativa 1:</label>
+				<div class="col-sm-3">
+					<input id="alt1-text" class="form-control" type="text" ng-model="pergunta.alternativas[0].alternativa">
+				</div>
+				<label>
+					Correta:
+					<input id="alt1-correct" type="radio" ng-model="correta" value="alt1">
+				</label>
+			</div>
+			
+			<div class="form-group form-inline" class="col-sm-8">
+				<label class="control-label col-sm-2" for="alt2-text">Alternativa 2:</label>
+				<div class="col-sm-3">
+					<input id="alt2-text" class="form-control" type="text" ng-model="pergunta.alternativas[1].alternativa">
+				</div>
+				<label>
+					Correta:
+					<input id="alt2-correct" type="radio" ng-model="correta" value="alt2">
+				</label>
+			</div>
+			
+			<div class="form-group form-inline" class="col-sm-8">
+				<label class="control-label col-sm-2" for="alt3-text">Alternativa 3:</label>
+				<div class="col-sm-3">
+					<input id="alt3-text" class="form-control" type="text" ng-model="pergunta.alternativas[2].alternativa">
+				</div>
+				<label>
+					Correta:
+					<input id="alt3-correct" type="radio" ng-model="correta" value="alt3">
+				</label>
+			</div>
+			
+			<input type="submit" class="btn btn-primary center-block" ng-click="addQuestion()" value="Adicionar Pergunta" />
+		</form>
+		
+		<table class="table table-bordered col-sm-7" ng-init="atualizaQuestions()">
 		    <caption>Todos as Questões</caption>
 		    <thead>
 		    <tr>
-		        <th>ID</th>
-		        <th>Questão</th>
-		        <th>Alternativas</th>
-		        <th>Editar</th>
+		        <th class="col-sm-1">ID</th>
+		        <th class="col-sm-3">Questão</th>
+		        <th class="col-sm-2">Alternativas</th>
+		        <th class="col-sm-1">Editar</th>
 		    </tr>
 		    </thead>
 		
 		    <tbody id="dataRows">
 				<tr ng-repeat="q in questions">
-					<td>{{ q.id }}</td>
-				    <td>{{ q.enunciate }}</td>
-				    <td>
+					<td class="col-sm-1">{{ q.id }}</td>
+				    <td class="col-sm-3">{{ q.enunciate }}</td>
+				    <td class="col-sm-2">
 				    	<table class="table">
 				    		<tr ng-repeat="a in q.alternativas">
 				    			<td ng-hide="editing">{{ a.alternativa }}</td>
@@ -42,7 +91,7 @@
 				    		</tr>
 				    	</table>
 				    </td>
-				    <td> <a class='btn btn-danger' role='button' ng-click="deletaQuestao(q.id)">Excluir</a> </td>
+				    <td class="col-sm-1"> <a class='btn btn-danger' role='button' ng-click="deletaQuestion(q.id)">Excluir</a> </td>
 				</tr>
 		    </tbody>
 		</table>

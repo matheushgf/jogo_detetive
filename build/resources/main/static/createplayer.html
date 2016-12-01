@@ -1,78 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Cadastro de Usuários</title>
-
-
-	  <script src="/js/jquery-2.2.3.min.js"></script>
-
-	<link href="css/bootstrap.min.css" rel=stylesheet>
+	<head>
+		<meta charset="utf-8">
+		<title>Registrar-se</title>
+		<script src="/js/jquery-2.2.3.min.js"></script>
+	    <link href="css/bootstrap.min.css" rel=stylesheet>
+	    <link href="css/jogo.css" rel=stylesheet>
+		<script src="js/angular.min.js"></script>
+		<script src="js/controllers.js"></script>
+		<script src="/js/sweetalert.min.js"></script>
+		<link href="css/sweetalert.css" rel="stylesheet">
+	</head>
 	
-	
-	<script>
-		$(document).ready(function(){
-			$('form').submit(function(e){
-				e.preventDefault();
-				
-				var email = $('#email').val().trim();
-				var password = $('#password').val().trim();
-
-				var url = JSON.stringify({"email":email,"password":password});
-				
-				$.post("/jogador/add", url, function(data){
-							
-					
-						if(data[0].status == 1)
-						{
-
-							sessionStorage.setItem("email",data[0].email);
-							window.location.href = '/created.html';
-						} 
-						else
-						{
-							window.location.href = '/ 	.html?error';
-						}
-						
-				}, "json");
-			
-			});
-				});
-
-	</script>
-	
-  </head>
-  <body background="http://www.portalgildabonfim.com.br/site/wp-content/uploads/2014/04/fundo-site.jpg">
+ 	<body background="images/fundo-site.jpg" ng-app="jogoApp">
+		<nav class="navbar navbar-default">
+			<div class="container">
+		        <div class="navbar-header">
+		        	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+		            <span class="sr-only">Toggle navigation</span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		          </button>
+		          <a class="navbar-brand"><img src="/images/logo.png" alt="Jogo Detetive"></a>
+		        </div>
+		        <div id="navbar" class="collapse navbar-collapse">
+		          <ul class="nav navbar-nav">
+		            <li><a href="index.html">Home</a></li>
+		            <li><a href="sobre.html">Sobre</a></li>
+		            <li class="active"><a href="createplayer.html">Registrar-se</a></li>
+		          </ul>
+		        </div>
+		      </div>
+		</nav>
 		<br>
 		<br>
-		<form class="form-horizontal" method="post" id="form">
-			<div class="form-group form-group">
-				<label for="tiago" class="col-md-4 control-label">Email</label>
-				<div class="col-md-4">
-					<input required="required" type="email" class="form-control" id="email" placeholder="Email">
+		<div ng-controller="registerCtrl">
+			<form class="form-horizontal form-css" name="form" novalidate>
+				<div class="form-group">
+					<label for="email" class="col-md-4 control-label">Email</label>
+					<div class="col-md-4">
+						<input required type="email" name="email" ng-model="user.email">
+						<br>
+						<div ng-show="form.$submitted || form.email.$touched">
+					      <span ng-show="form.email.$error.required">Campo obrigatório.</span>
+					      <span ng-show="form.email.$error.email">Email não é válido. Tente outro. Ex: exemplo@provedor.com</span>
+					    </div>
+					</div>
+					<div class="col-md-4">
+						<label class="control-label">Ex: exemplo@provedor.com</label>
+					</div>
 				</div>
-				<div class="col-md-4">
-					<label for="inputEmail3" class="control-label">Ex: tiago.rfaria@hotmail.com</label>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<label for="inputPassword3" class="col-md-4 control-label">Senha</label>
-				<div class="col-md-4">
-					<input required="required" type="password" class="form-control" id="password" placeholder="Senha">
-				</div>
-				<div class="col-md-4">
-					<label for="inputEmail3" class="control-label">Ex: 12345</label>
-				</div>
-			</div>
-																	
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<button id="createUser" type="submit" class="btn btn-primary col-md-offset-5">Cadastrar Usuário</button>
-				</div>
-			</div>
-			
-		</form>
 	
+				<div class="form-group">
+					<label for="password" class="col-md-4 control-label">Senha</label>
+					<div class="col-md-4">
+						<input required type="password" id="password" name="password" minlength="6" ng-model="user.password">
+						<br>
+						<div ng-show="form.$submitted || form.password.$touched">
+					      <span ng-show="form.password.$error.required">Campo obrigatório.</span>
+					      <span ng-show="form.password.$error.minlength">A senha deve ter pelo menos 6 caracteres.</span>
+					    </div>
+					</div>
+					<div class="col-md-4">
+						<label class="control-label">Deve ter no mínimo 6 caracteres. Ex: 123456</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="confirmpassword" class="col-md-4 control-label">Confirme a Senha</label>
+					<div class="col-md-4">
+						<input required type="password" name="confirmpassword" ng-model="confirm">
+						<br>
+						<div ng-show="form.$submitted || form.confirmpassword.$touched">
+					      <span ng-show="form.confirmpassword.$error.required">Campo obrigatório.</span>
+					      <span ng-hide="match">Senhas não conferem.</span>
+					    </div>
+					</div>
+					<div class="col-md-4">
+						<label class="control-label">Digite novamente a sua senha.</label>
+					</div>
+				</div>
+																		
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<input type="submit" class="btn btn-primary col-md-offset-5" value="Cadastrar" ng-click="registerUser(form, user)"></input>
+					</div>
+				</div>
+			</form>
+		</div>
   </body>
 </html>
